@@ -54,7 +54,7 @@ extern bool need_memclockrst;
 #if defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64)
 	#include <windows.h>
 	static void *wrap_dlopen(const char *filename) {
-		HMODULE h = LoadLibrary(filename);
+		HMODULE h = LoadLibraryA(filename);
 		if (!h && opt_debug) {
 			applog(LOG_DEBUG, "dlopen(%d): failed to load %s", 
 				GetLastError(), filename);
@@ -104,7 +104,7 @@ nvml_handle * nvml_create()
 
 	char tmp[512];
 #ifdef WIN32
-	ExpandEnvironmentStrings(libnvidia_ml, tmp, sizeof(tmp));
+	ExpandEnvironmentStringsA(libnvidia_ml, tmp, sizeof(tmp));
 #else
 	strcpy(tmp, libnvidia_ml);
 #endif

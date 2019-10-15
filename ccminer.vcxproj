@@ -245,6 +245,7 @@
     <ClCompile Include="nvapi.cpp" />
     <ClCompile Include="nvsettings.cpp" />
     <ClCompile Include="pools.cpp" />
+    <ClCompile Include="sph\tiger.c" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="bench.cpp" />
     <ClCompile Include="bignum.cpp" />
@@ -268,6 +269,9 @@
     <ClCompile Include="neoscrypt\neoscrypt.cpp" />
     <ClCompile Include="neoscrypt\neoscrypt-cpu.c" />
     <ClInclude Include="neoscrypt\cuda_vectors.h" />
+    <ClInclude Include="skunk\skein_header.h" />
+    <ClInclude Include="skunk\streebog_arrays.cuh" />
+    <ClInclude Include="sph\sph_tiger.h" />
     <ClInclude Include="x11\cuda_x11_simd512_sm2.cuh" />
     <ClInclude Include="x16\cuda_x16.h" />
     <CudaCompile Include="Algo256\bmw.cu" />
@@ -438,6 +442,8 @@
     <CudaCompile Include="sha256\sha256t.cu" />
     <CudaCompile Include="sha256\cuda_sha256q.cu" />
     <CudaCompile Include="sha256\sha256q.cu" />
+    <CudaCompile Include="x16\cuda_sha256_2.cu" />
+    <CudaCompile Include="x16\cuda_tiger192.cu" />
     <CudaCompile Include="zr5.cu" />
     <CudaCompile Include="heavy\cuda_blake512.cu">
     </CudaCompile>

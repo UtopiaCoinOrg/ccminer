@@ -357,6 +357,9 @@
     <ClCompile Include="equi\blake2\blake2bx.cpp">
       <Filter>Source Files\equi</Filter>
     </ClCompile>
+    <ClCompile Include="sph\tiger.c">
+      <Filter>Source Files\sph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algos.h">
@@ -610,6 +613,15 @@
     </ClInclude>
     <ClInclude Include="x16\cuda_x16.h">
       <Filter>Header Files\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="sph\sph_tiger.h">
+      <Filter>Source Files\sph</Filter>
+    </ClInclude>
+    <ClInclude Include="skunk\skein_header.h">
+      <Filter>Source Files\CUDA\skunk</Filter>
+    </ClInclude>
+    <ClInclude Include="skunk\streebog_arrays.cuh">
+      <Filter>Source Files\CUDA\skunk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1043,6 +1055,12 @@
       <Filter>Source Files\CUDA\x16</Filter>
     </CudaCompile>
     <CudaCompile Include="blake2b.cu" />
+    <CudaCompile Include="x16\cuda_tiger192.cu">
+      <Filter>Source Files\CUDA\x16</Filter>
+    </CudaCompile>
+    <CudaCompile Include="x16\cuda_sha256_2.cu">
+      <Filter>Source Files\CUDA\x16</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ccminer.ico">

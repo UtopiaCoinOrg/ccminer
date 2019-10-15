@@ -26,7 +26,7 @@ public:
 	{
 		bool success = false;
 #ifdef _WIN64
-		library = LoadLibrary("nvapi64.dll");
+		library = LoadLibraryA("nvapi64.dll");
 #else
 		library = LoadLibrary("nvapi.dll");
 #endif

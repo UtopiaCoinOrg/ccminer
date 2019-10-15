@@ -27,9 +27,9 @@ extern void x11_cubehash512_cpu_hash_64(int thr_id, uint32_t threads, uint32_t s
 extern void x13_fugue512_cpu_init(int thr_id, uint32_t threads);
 extern void x13_fugue512_cpu_hash_64(int thr_id, uint32_t threads, uint32_t startNounce, uint32_t *d_nonceVector, uint32_t *d_hash, int order);
 extern void x13_fugue512_cpu_free(int thr_id);
-extern void streebog_sm3_set_target(uint32_t* ptarget);
-extern void streebog_sm3_hash_64_final(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
-extern void skunk_streebog_set_target(uint32_t* ptarget);
+extern void streebog_set_target(uint32_t* ptarget);
+extern void streebog_cpu_hash_64_final(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
+extern void skunk_set_target(uint32_t* ptarget);
 extern void skunk_cuda_streebog(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
 
 // CPU Hash
@@ -124,9 +124,9 @@ extern "C" int scanhash_polytimos(int thr_id, struct work* work, uint32_t max_no
 	cudaMemset(d_resNonce[thr_id], 0xff, 2*sizeof(uint32_t));
 	skein512_cpu_setBlock_80(endiandata);
 	if (use_compat_kernels[thr_id]) {
-		streebog_sm3_set_target(ptarget);
+		streebog_set_target(ptarget);
 	} else {
-		skunk_streebog_set_target(ptarget);
+		skunk_set_target(ptarget);
 	}
 
 	do {
@@ -138,7 +138,7 @@ extern "C" int scanhash_polytimos(int thr_id, struct work* work, uint32_t max_no
 		x11_luffa512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		x13_fugue512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		if (use_compat_kernels[thr_id]) {
-			streebog_sm3_hash_64_final(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
+			streebog_cpu_hash_64_final(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
 		} else {
 			skunk_cuda_streebog(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
 		}

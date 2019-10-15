@@ -14,12 +14,12 @@ extern void skein512_cpu_hash_80(int thr_id, uint32_t threads, uint32_t startNou
 extern void x14_shabal512_cpu_hash_64(int thr_id, uint32_t threads, uint32_t startNounce, uint32_t *d_nonceVector, uint32_t *d_hash, int order);
 
 // for SM3.x
-extern void streebog_sm3_set_target(uint32_t* ptarget);
-extern void streebog_sm3_hash_64_final(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
+extern void streebog_set_target(uint32_t* ptarget);
+extern void streebog_cpu_hash_64_final(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
 
 // for latest cards only
 extern void skunk_cpu_init(int thr_id, uint32_t threads);
-extern void skunk_streebog_set_target(uint32_t* ptarget);
+extern void skunk_set_target(uint32_t* ptarget);
 extern void skunk_cuda_streebog(int thr_id, uint32_t threads, uint32_t *d_hash, uint32_t* d_resNonce);
 
 #include <stdio.h>
@@ -107,9 +107,9 @@ extern "C" int scanhash_veltor(int thr_id, struct work* work, uint32_t max_nonce
 
 	cudaMemset(d_resNonce[thr_id], 0xff, NBN*sizeof(uint32_t));
 	if(use_compat_kernels[thr_id])
-		streebog_sm3_set_target(ptarget);
+		streebog_set_target(ptarget);
 	else
-		skunk_streebog_set_target(ptarget);
+		skunk_set_target(ptarget);
 
 	do {
 		int order = 0;
@@ -117,7 +117,7 @@ extern "C" int scanhash_veltor(int thr_id, struct work* work, uint32_t max_nonce
 		x11_shavite512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		x14_shabal512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		if(use_compat_kernels[thr_id])
-			streebog_sm3_hash_64_final(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
+			streebog_cpu_hash_64_final(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
 		else
 			skunk_cuda_streebog(thr_id, throughput, d_hash[thr_id], d_resNonce[thr_id]);
 
