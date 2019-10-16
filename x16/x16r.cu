@@ -145,7 +145,7 @@ extern "C" void x16r_hash(void *output, const void *input)
 	uint32_t *in32 = (uint32_t*) input;
 	getAlgoString(&in32[1], hashOrder);
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < HASH_FUNC_COUNT; i++)
 	{
 		const uint8_t algo = hashOrder[i];
 		switch (algo) {
