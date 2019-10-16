@@ -48,7 +48,6 @@ enum Algo {
 	BLAKE = 0,
 	BMW,
 	GROESTL,
-	JH,
 	KECCAK,
 	SKEIN,
 	LUFFA,
@@ -72,7 +71,6 @@ static const char* algo_strings[] = {
 	"blake",
 	"bmw512",
 	"groestl",
-	"jh512",
 	"keccak",
 	"skein",
 	"luffa",
@@ -100,18 +98,16 @@ static void getAlgoString(const uint32_t* prevblock, char *output)
 	char *sptr = output;
 	uint8_t* data = (uint8_t*)prevblock;
 
+	uint8_t algoDigit = 0;
 	for (uint8_t j = 0; j < HASH_FUNC_COUNT; j++) {
-		if (j < 16) {
-			uint8_t b = (15 - j) >> 1; // 16 ascii hex chars, reversed
-			uint8_t algoDigit = (j & 1) ? data[b] & 0xF : data[b] >> 4;
-			if (algoDigit >= 10)
-				sprintf(sptr, "%c", 'A' + (algoDigit - 10));
-			else
-				sprintf(sptr, "%u", (uint32_t)algoDigit);
+		if (j == 0){
+			algoDigit = data[j] % 15;
 		}
-		else {
-			sprintf(sptr, "%c", 'A' + (j - 10));
+		else
+		{
+			algoDigit = ((data[j%7]>>1) + j) % 19;
 		}
+		sprintf(sptr, "%d", algoDigit);
 		sptr++;
 	}
 	*sptr = '\0';
@@ -125,7 +121,6 @@ extern "C" void x16r_hash(void *output, const void *input)
 	sph_blake512_context ctx_blake;
 	sph_bmw512_context ctx_bmw;
 	sph_groestl512_context ctx_groestl;
-	sph_jh512_context ctx_jh;
 	sph_keccak512_context ctx_keccak;
 	sph_skein512_context ctx_skein;
 	sph_luffa512_context ctx_luffa;
@@ -152,9 +147,7 @@ extern "C" void x16r_hash(void *output, const void *input)
 
 	for (int i = 0; i < 16; i++)
 	{
-		const char elem = hashOrder[i];
-		const uint8_t algo = elem >= 'A' ? elem - 'A' + 10 : elem - '0';
-
+		const uint8_t algo = hashOrder[i];
 		switch (algo) {
 		case BLAKE:
 			sph_blake512_init(&ctx_blake);
@@ -175,11 +168,6 @@ extern "C" void x16r_hash(void *output, const void *input)
 			sph_skein512_init(&ctx_skein);
 			sph_skein512(&ctx_skein, in, size);
 			sph_skein512_close(&ctx_skein, hash);
-			break;
-		case JH:
-			sph_jh512_init(&ctx_jh);
-			sph_jh512(&ctx_jh, in, size);
-			sph_jh512_close(&ctx_jh, hash);
 			break;
 		case KECCAK:
 			sph_keccak512_init(&ctx_keccak);
@@ -317,7 +305,6 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 		quark_bmw512_cpu_init(thr_id, throughput);
 		quark_groestl512_cpu_init(thr_id, throughput);
 		quark_skein512_cpu_init(thr_id, throughput);
-		quark_jh512_cpu_init(thr_id, throughput);
 		quark_keccak512_cpu_init(thr_id, throughput);
 		qubit_luffa512_cpu_init(thr_id, throughput);
 		x11_luffa512_cpu_init(thr_id, throughput); // 64
@@ -361,9 +348,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 
 	cuda_check_cpu_setTarget(ptarget);
 
-	char elem = hashOrder[0];
-	const uint8_t algo80 = elem >= 'A' ? elem - 'A' + 10 : elem - '0';
-
+	const uint8_t algo80 = hashOrder[0];
 	switch (algo80) {
 		case BLAKE:
 			quark_blake512_cpu_setBlock_80(thr_id, endiandata);
@@ -373,9 +358,6 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 			break;
 		case GROESTL:
 			groestl512_setBlock_80(thr_id, endiandata);
-			break;
-		case JH:
-			jh512_setBlock_80(thr_id, endiandata);
 			break;
 		case KECCAK:
 			keccak512_setBlock_80(thr_id, endiandata);
@@ -437,10 +419,6 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 			case GROESTL:
 				groestl512_cuda_hash_80(thr_id, throughput, pdata[19], d_hash[thr_id]); order++;
 				TRACE("grstl80:");
-				break;
-			case JH:
-				jh512_cuda_hash_80(thr_id, throughput, pdata[19], d_hash[thr_id]); order++;
-				TRACE("jh51280:");
 				break;
 			case KECCAK:
 				keccak512_cuda_hash_80(thr_id, throughput, pdata[19], d_hash[thr_id]); order++;
@@ -506,9 +484,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 
 		for (int i = 1; i < HASH_FUNC_COUNT; i++)
 		{
-			const char elem = hashOrder[i];
-			const uint8_t algo64 = elem >= 'A' ? elem - 'A' + 10 : elem - '0';
-
+			const uint8_t algo64 = hashOrder[i];
 			switch (algo64) {
 			case BLAKE:
 				quark_blake512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
@@ -521,10 +497,6 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 			case GROESTL:
 				quark_groestl512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 				TRACE("groestl:");
-				break;
-			case JH:
-				quark_jh512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
-				TRACE("jh512  :");
 				break;
 			case KECCAK:
 				quark_keccak512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
@@ -551,11 +523,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 				TRACE("simd   :");
 				break;
 			case ECHO:
-				//if (use_compat_kernels[thr_id])
-				//	x11_echo512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
-				//else {
 				x16_echo512_cpu_hash_64(thr_id, throughput, d_hash[thr_id]); order++;
-				//}
 				TRACE("echo   :");
 				break;
 			case HAMSI:
@@ -633,8 +601,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 				char oks80[128] = { 0 };
 				char fails[128] = { 0 };
 				for (int a = 0; a < HASH_FUNC_COUNT; a++) {
-					const char elem = hashOrder[a];
-					const uint8_t algo64 = elem >= 'A' ? elem - 'A' + 10 : elem - '0';
+					const uint8_t algo64 = hashOrder[a];
 					if (a > 0) algo64_tests[algo64] += work->valid_nonces;
 					sprintf(&oks64[strlen(oks64)], "|%X:%2d", a, algo64_tests[a] < 100 ? algo64_tests[a] : 99);
 					sprintf(&oks80[strlen(oks80)], "|%X:%2d", a, algo80_tests[a] < 100 ? algo80_tests[a] : 99);
