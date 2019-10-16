@@ -100,14 +100,14 @@ static void getAlgoString(const uint32_t* prevblock, char *output)
 
 	uint8_t algoDigit = 0;
 	for (uint8_t j = 0; j < HASH_FUNC_COUNT; j++) {
-		if (j == 0){
+		if (j == 0) {
 			algoDigit = data[j] % 15;
 		}
 		else
 		{
-			algoDigit = ((data[j%7]>>1) + j) % 19;
+			algoDigit = ((data[j % 7] >> 1) + j) % 19;
 		}
-		sprintf(sptr, "%d", algoDigit);
+		sprintf(sptr, "%c", 'A' + algoDigit);
 		sptr++;
 	}
 	*sptr = '\0';
@@ -117,6 +117,7 @@ static void getAlgoString(const uint32_t* prevblock, char *output)
 extern "C" void x16r_hash(void *output, const void *input)
 {
 	unsigned char _ALIGN(64) hash[128];
+	unsigned char _ALIGN(64) hash2[128];
 
 	sph_blake512_context ctx_blake;
 	sph_bmw512_context ctx_bmw;
@@ -145,9 +146,9 @@ extern "C" void x16r_hash(void *output, const void *input)
 	uint32_t *in32 = (uint32_t*) input;
 	getAlgoString(&in32[1], hashOrder);
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < HASH_FUNC_COUNT; i++)
 	{
-		const uint8_t algo = hashOrder[i];
+		const uint8_t algo = hashOrder[i] - 'A';
 		switch (algo) {
 		case BLAKE:
 			sph_blake512_init(&ctx_blake);
@@ -224,18 +225,19 @@ extern "C" void x16r_hash(void *output, const void *input)
 			sph_sha512(&ctx_sha512,(const void*) in, size);
 			sph_sha512_close(&ctx_sha512,(void*) hash);
 			break;
-
 		case HAVAL256_5:
-			memset(hash, 0, 64);
+			memset(hash2, 0, 64);
 			sph_haval256_5_init(&ctx_haval);
-			sph_haval256_5(&ctx_haval,(const void*)in, size);
-			sph_haval256_5_close(&ctx_haval,hash);
+			sph_haval256_5(&ctx_haval, (const void*)in, size);
+			sph_haval256_5_close(&ctx_haval, hash2);
+			memcpy(hash, hash2, 64);
 			break;
 		case TIGER:
-			memset(hash, 0, 64);
+			memset(hash2, 0, 64);
 			sph_tiger_init(&ctx_tiger);
-			sph_tiger (&ctx_tiger, (const void*) in, size);
-			sph_tiger_close(&ctx_tiger, (void*) hash);
+			sph_tiger(&ctx_tiger, (const void*)in, size);
+			sph_tiger_close(&ctx_tiger, (void*)hash2);
+			memcpy(hash, hash2, 64);
 			break;
 		case GOST512:
 			sph_gost512_init(&ctx_gost);
@@ -348,7 +350,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 
 	cuda_check_cpu_setTarget(ptarget);
 
-	const uint8_t algo80 = hashOrder[0];
+	const uint8_t algo80 = hashOrder[0] - 'A';
 	switch (algo80) {
 		case BLAKE:
 			quark_blake512_cpu_setBlock_80(thr_id, endiandata);
@@ -484,7 +486,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 
 		for (int i = 1; i < HASH_FUNC_COUNT; i++)
 		{
-			const uint8_t algo64 = hashOrder[i];
+			const uint8_t algo64 = hashOrder[i] - 'A';
 			switch (algo64) {
 			case BLAKE:
 				quark_blake512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
@@ -601,7 +603,7 @@ extern "C" int scanhash_x16r(int thr_id, struct work* work, uint32_t max_nonce, 
 				char oks80[128] = { 0 };
 				char fails[128] = { 0 };
 				for (int a = 0; a < HASH_FUNC_COUNT; a++) {
-					const uint8_t algo64 = hashOrder[a];
+					const uint8_t algo64 = hashOrder[a] - 'A';
 					if (a > 0) algo64_tests[algo64] += work->valid_nonces;
 					sprintf(&oks64[strlen(oks64)], "|%X:%2d", a, algo64_tests[a] < 100 ? algo64_tests[a] : 99);
 					sprintf(&oks80[strlen(oks80)], "|%X:%2d", a, algo80_tests[a] < 100 ? algo80_tests[a] : 99);
