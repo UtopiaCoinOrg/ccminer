@@ -312,6 +312,7 @@ Options:\n\
 			x17         X17\n\
 			wildkeccak  Boolberry\n\
 			zr5         ZR5 (ZiftrCoin)\n\
+			x19r        X19R (UtopiaCoin)\n\
   -d, --devices         Comma separated list of CUDA devices to use.\n\
                         Device IDs start counting from 0! Alternatively takes\n\
                         string names of your cards like gtx780ti or gt640#2\n\
@@ -709,9 +710,12 @@ static bool work_decode(const json_t *val, struct work *work)
 
 	switch (opt_algo) {
 	case ALGO_DECRED:
-	case ALGO_X16R:
 		data_size = 192;
 		adata_sz = 180/4;
+		break;
+	case ALGO_X19R:
+		data_size = 192;
+		adata_sz = 180 / 4;
 		break;
 	case ALGO_PHI2:
 		data_size = 144;
@@ -1089,8 +1093,11 @@ static bool submit_upstream_work(CURL *curl, struct work *work)
 		if (opt_algo == ALGO_ZR5) {
 			data_size = 80; adata_sz = 20;
 		}
-		else if (opt_algo == ALGO_DECRED || opt_algo == ALGO_X16R) {
+		else if (opt_algo == ALGO_DECRED) {
 			data_size = 192; adata_sz = 180/4;
+		}
+		else if (opt_algo == ALGO_X19R) {
+			data_size = 192; adata_sz = 180 / 4;
 		}
 		else if (opt_algo == ALGO_PHI2 && use_roots) {
 			data_size = 144; adata_sz = 36;
@@ -1752,6 +1759,7 @@ static bool stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 		case ALGO_EXOSIS:
 		case ALGO_X16R:
 		case ALGO_X16S:
+		case ALGO_X19R:
 			work_set_target(work, sctx->job.diff / (256.0 * opt_difficulty));
 			break;
 		case ALGO_KECCAK:
@@ -1925,7 +1933,7 @@ static void *miner_thread(void *userdata)
 			wcmpoft = (32+16)/4;
 			wcmplen = 32;
 		}
-		else if (opt_algo == ALGO_X16R) {
+		else if (opt_algo == ALGO_X19R) {
 			wcmplen = 176;
 		}
 
@@ -2600,6 +2608,9 @@ static void *miner_thread(void *userdata)
 			break;
 		case ALGO_ZR5:
 			rc = scanhash_zr5(thr_id, &work, max_nonce, &hashes_done);
+			break;
+		case ALGO_X19R:
+			rc = scanhash_x19r(thr_id, &work, max_nonce, &hashes_done);
 			break;
 
 		default:
@@ -4019,7 +4030,6 @@ int main(int argc, char *argv[])
 #endif
 	if (num_cpus < 1)
 		num_cpus = 1;
-
 	// number of gpus
 	active_gpus = cuda_num_devices();
 

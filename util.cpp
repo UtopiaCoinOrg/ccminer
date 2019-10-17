@@ -2371,6 +2371,9 @@ void print_hash_tests(void)
 	//zr5hash_pok(&hash[0], (uint32_t*) &buf[0]);
 	printpfx("ZR5", hash);
 
+	x19r_hash(&hash[0], &buf[0]);
+	printpfx("x19r", hash);
+
 	printf("\n");
 
 	do_gpu_tests();

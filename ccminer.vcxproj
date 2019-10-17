@@ -274,6 +274,7 @@
     <ClInclude Include="sph\sph_tiger.h" />
     <ClInclude Include="x11\cuda_x11_simd512_sm2.cuh" />
     <ClInclude Include="x16\cuda_x16.h" />
+    <ClInclude Include="x19r\cuda_x19.h" />
     <CudaCompile Include="Algo256\bmw.cu" />
     <CudaCompile Include="Algo256\cuda_bmw.cu">
       <MaxRegCount>76</MaxRegCount>
@@ -444,6 +445,8 @@
     <CudaCompile Include="sha256\sha256q.cu" />
     <CudaCompile Include="x16\cuda_sha256_2.cu" />
     <CudaCompile Include="x16\cuda_tiger192.cu" />
+    <CudaCompile Include="x16\x16r.cu" />
+    <CudaCompile Include="x19r\x19r.cu" />
     <CudaCompile Include="zr5.cu" />
     <CudaCompile Include="heavy\cuda_blake512.cu">
     </CudaCompile>
@@ -608,7 +611,6 @@
     <CudaCompile Include="x15\x15.cu" />
     <CudaCompile Include="x15\whirlpool.cu" />
     <CudaCompile Include="x15\cuda_x15_whirlpool_sm3.cu" />
-    <CudaCompile Include="x16\x16r.cu" />
     <CudaCompile Include="x16\x16s.cu" />
     <CudaCompile Include="x16\cuda_x16_echo512.cu" />
     <CudaCompile Include="x16\cuda_x16_fugue512.cu" />

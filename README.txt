@@ -141,6 +141,7 @@ its command line interface and options.
                           whirlpool   use to mine Joincoin
                           wildkeccak  use to mine Boolberry (Stratum only)
                           zr5         use to mine ZiftrCoin
+						  x19r        use to mine UtopiaCoin
 
   -d, --devices         gives a comma separated list of CUDA device IDs
                         to operate on. Device IDs start counting from 0!
@@ -610,6 +611,8 @@ features.
 
   March, 18 2014  initial release.
 
+  Oct. 01 2019  
+                  New x19r algo for UtopiaCoin
 
 >>> AUTHORS <<<
 

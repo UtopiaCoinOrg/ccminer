@@ -58,9 +58,6 @@
     <Filter Include="Source Files\CUDA\x15">
       <UniqueIdentifier>{a2403c22-6777-46ab-a55a-3fcc7386c974}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\CUDA\x16">
-      <UniqueIdentifier>{55dfae6a-66ba-43e2-8ceb-98ee70cbdf16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\CUDA\x17">
       <UniqueIdentifier>{85dfae6a-66ca-4332-8cec-98ee70cbdf2f}</UniqueIdentifier>
     </Filter>
@@ -120,6 +117,12 @@
     </Filter>
     <Filter Include="Source Files\CUDA\x12">
       <UniqueIdentifier>{xde48d89-fx12-1323-129a-b592fe2b2de3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CUDA\x19r">
+      <UniqueIdentifier>{55dfae6a-66ba-43e2-8ceb-98ee70cbdf16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CUDA\x16">
+      <UniqueIdentifier>{65bdb4a6-4312-48fd-bbb6-c3576eb15709}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -623,6 +626,9 @@
     <ClInclude Include="skunk\streebog_arrays.cuh">
       <Filter>Source Files\CUDA\skunk</Filter>
     </ClInclude>
+    <ClInclude Include="x19r\cuda_x19.h">
+      <Filter>Source Files\CUDA\x19r</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="cuda.cpp">
@@ -1033,6 +1039,13 @@
     <CudaCompile Include="x15\cuda_x15_whirlpool_sm3.cu">
       <Filter>Source Files\CUDA\x15</Filter>
     </CudaCompile>
+    <CudaCompile Include="blake2b.cu" />
+    <CudaCompile Include="x16\cuda_sha256_2.cu">
+      <Filter>Source Files\CUDA\x16</Filter>
+    </CudaCompile>
+    <CudaCompile Include="x16\cuda_tiger192.cu">
+      <Filter>Source Files\CUDA\x16</Filter>
+    </CudaCompile>
     <CudaCompile Include="x16\cuda_x16_echo512.cu">
       <Filter>Source Files\CUDA\x16</Filter>
     </CudaCompile>
@@ -1048,18 +1061,14 @@
     <CudaCompile Include="x16\cuda_x16_simd512_80.cu">
       <Filter>Source Files\CUDA\x16</Filter>
     </CudaCompile>
-    <CudaCompile Include="x16\x16r.cu">
-      <Filter>Source Files\CUDA\x16</Filter>
-    </CudaCompile>
     <CudaCompile Include="x16\x16s.cu">
       <Filter>Source Files\CUDA\x16</Filter>
     </CudaCompile>
-    <CudaCompile Include="blake2b.cu" />
-    <CudaCompile Include="x16\cuda_tiger192.cu">
+    <CudaCompile Include="x16\x16r.cu">
       <Filter>Source Files\CUDA\x16</Filter>
     </CudaCompile>
-    <CudaCompile Include="x16\cuda_sha256_2.cu">
-      <Filter>Source Files\CUDA\x16</Filter>
+    <CudaCompile Include="x19r\x19r.cu">
+      <Filter>Source Files\CUDA\x19r</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
